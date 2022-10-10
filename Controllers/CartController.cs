@@ -7,8 +7,11 @@ using Newtonsoft.Json;
 
 namespace ApiCart.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(String), 400)]
+    [ProducesResponseType(typeof(String), 404)]
     public class CartController : ControllerBase
     {
         private readonly ICartService _service;
@@ -18,8 +21,7 @@ namespace ApiCart.Controllers
         }
 
         [HttpGet("listAll")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
+        [ProducesResponseType(typeof(List<CartModel>), 200)]
         public async Task<IActionResult> ListAll()
         {
             try
@@ -34,8 +36,7 @@ namespace ApiCart.Controllers
         }
 
         [HttpGet("get/{id}")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(404)]
+        [ProducesResponseType(typeof(CartModel), 200)]
         public async Task<IActionResult> GetByID(long id)
         {
             try
@@ -49,15 +50,14 @@ namespace ApiCart.Controllers
             }
         }
 
-        [HttpPost("create/{id}")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
+        [HttpPost("insert-product/{id}")]
+        [ProducesResponseType(204)]
         public async Task<IActionResult> Insert([FromBody]ProductModel product, long id)
         {
             try
             {
                 var create = await _service.Create(product, id);
-                return Ok();
+                return NoContent();
             }
             catch(Exception ex)
             {
@@ -66,14 +66,13 @@ namespace ApiCart.Controllers
         }
 
         [HttpDelete("delete/product/{idCart}/{idProduct}")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
         public async Task<IActionResult> DeleteProduct(long idCart, long idProduct)
         {
             try
             {
                 await _service.DeleteProduct(idCart, idProduct);
-                return Ok();
+                return NoContent();
             }
             catch(Exception ex)
             {
@@ -82,8 +81,7 @@ namespace ApiCart.Controllers
         }
 
         [HttpDelete("delete/{id}")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
         public async Task<IActionResult> delete(int id)
         {
             try
@@ -98,9 +96,7 @@ namespace ApiCart.Controllers
         }
 
         [HttpPost("finish/{id}")]
-        [Produces("application/json")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
+        [ProducesResponseType(typeof(FinishCartModel), 200)]
         public async Task<IActionResult> finish(int id)
         {
             try

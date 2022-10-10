@@ -70,8 +70,9 @@ namespace ApiCart
 
         private void DependencyInjections(IServiceCollection services)
         {
-            services.AddScoped<ICartService, CartService>();
+            services.AddSingleton<Context>(); //Dados in memory
 
+            services.AddScoped<ICartService, CartService>();
             services.AddScoped<ICartRepository, CartRepository>();
         }
     }

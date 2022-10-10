@@ -9,7 +9,6 @@ namespace ApiCart.Services
     public class CartService : ICartService
     {
         private readonly ICartRepository _repository;
-        public GenerateID _generate = new GenerateID();
 
         public CartService(ICartRepository repository)
         {
@@ -22,11 +21,16 @@ namespace ApiCart.Services
             return _listAll.Select(c => new CartModel(c)).ToList();
         }
 
-        public async Task<CartModel> GetByID(long id)
+        public async Task<List<ProductModel>> GetByID(long id)
         {
             var cart = await _repository.GetByID(id);
             if (cart.Id == 0) throw new FileNotFoundException();
-            return new CartModel(cart);
+            List<ProductModel> products = new List<ProductModel>();
+            foreach (var item in cart.Products)
+            {
+                products.Add(new ProductModel(item));
+            }
+            return products;
         }
 
         public async Task<CartModel> Create(ProductModel productModel, long idCart)
@@ -34,7 +38,7 @@ namespace ApiCart.Services
             if (idCart == 0) throw new ArgumentException("ID do carrinho é inválido");
             var product = new Product
             {
-                Id = _generate.GenerateRandomID(),
+                Id = GenerateID.GenerateNewID(),
                 DataCreate = DateTime.Now,
                 Name = productModel.Name,
                 Code = productModel.Code,

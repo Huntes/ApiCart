@@ -5,32 +5,32 @@ namespace ApiCart.Repositories
 {
     public class CartRepository : ICartRepository
     {
-        Context _context;
+        private readonly Context _context;
 
-        public CartRepository()
+        public CartRepository(Context context)
         {
-            _context = new Context();
+            _context = context;
         }
 
         public async Task<List<Cart>> ListAll()
         {
-            return await Task.FromResult(_context.Get());
+            return await Task.FromResult(_context.Carts.ToList());
         }
 
         public async Task<Cart> GetByID(long id)
         {
-            var cart = _context.Get().Where(c => c.Id == id).FirstOrDefault();
+            var cart = _context.Carts.Where(c => c.Id == id).FirstOrDefault();
             return await Task.FromResult(cart ?? new Cart { Id = 0});
         }
 
         public async Task<Cart> Create(Product product, long id)
         {
-            var cart = _context.Get().Where(c => c.Id == id).FirstOrDefault();
+            var cart = _context.Carts.Where(c => c.Id == id).FirstOrDefault();
             if(cart == null)
             {
                 cart = new Cart { Id = id, Products = new List<Product>()};
                 cart.Products.Add(product);
-                _context.Add(cart);
+                _context.Carts.Add(cart);
             }
             else
             {
@@ -42,7 +42,7 @@ namespace ApiCart.Repositories
 
         public async Task DeleteProduct(long idCart, long idProduct)
         {
-            var cart = _context.Get().Where(c => c.Id == idCart).FirstOrDefault();
+            var cart = _context.Carts.Where(c => c.Id == idCart).FirstOrDefault();
             if (cart == null) throw new FileNotFoundException("Carrinho não encontrado");
             var product = cart?.Products.Where(c => c.Id == idProduct).FirstOrDefault();
             if (product == null) throw new FileNotFoundException("Produto não encontrado");
@@ -52,9 +52,9 @@ namespace ApiCart.Repositories
 
         public async Task Delete(long id)
         {
-            var cart = _context.Get().Where(c => c.Id == id).FirstOrDefault();
+            var cart = _context.Carts.Where(c => c.Id == id).FirstOrDefault();
             if (cart == null) throw new FileNotFoundException("Carrinho não encontrado");
-            _context.Remove(cart);
+            _context.Carts.Remove(cart);
             await Task.FromResult(true);
         }
     }

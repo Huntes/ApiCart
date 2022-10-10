@@ -2,14 +2,12 @@
 {
     public class GenerateID
     {
-        int count = 0;
-
-        public int GenerateRandomID()
+        private static int count = 1;
+        public static int GenerateNewID()
         {
-            Random randNum = new Random();
-            var num = randNum.Next(count, 100);
+            int id = count;
             count++;
-            return num;
+            return id;
         }
     }
 }
